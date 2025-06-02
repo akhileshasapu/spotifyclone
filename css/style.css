@@ -260,24 +260,27 @@ body {
 .seekbar {
     height: 4px;
     width: 98%;
-    background: black;
+    background: #444; /* upcoming portion color */
     border-radius: 10px;
     position: absolute;
     bottom: 8px;
     margin: 6px;
     cursor: pointer;
+    /* Remove the old black background */
 }
 
 .circle {
     width: 13px;
     height: 13px;
-    border-radius: 13px;
-    background-color: black;
+    border-radius: 50%;
+    background-color: #1fdf64; /* bright green for progress indicator */
     position: relative;
     bottom: 5px;
     left: 0%;
     transition: left 0.5s;
+    border: 2px solid white;
 }
+
 
 .songbuttons img {
     cursor: pointer;
