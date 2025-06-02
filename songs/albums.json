@@ -1,0 +1,37 @@
+[
+  {
+    "folder": "angry-mood",
+    "title": "Angry Mood",
+    "description": "Songs to let the rage out"
+  },
+  {
+    "folder": "bright-mood",
+    "title": "Bright Mood",
+    "description": "Cheerful and uplifting tunes"
+  },
+  {
+    "folder": "chill-mood",
+    "title": "Chill Mood",
+    "description": "Relax and unwind"
+  },
+  {
+    "folder": "dark-mood",
+    "title": "Dark Mood",
+    "description": "Deep and moody vibes"
+  },
+  {
+    "folder": "funky-mood",
+    "title": "Funky Mood",
+    "description": "Groovy and funky beats"
+  },
+  {
+    "folder": "love-mood",
+    "title": "Love Mood",
+    "description": "Romantic and heartfelt melodies"
+  },
+  {
+    "folder": "uplifting-mood",
+    "title": "Uplifting Mood",
+    "description": "Feel-good songs to elevate your day"
+  }
+]
