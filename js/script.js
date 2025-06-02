@@ -11,25 +11,20 @@ function secondsToMinutesSeconds(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
+// UPDATED: getSongs now loads from info.json instead of directory listing
 async function getSongs(folder) {
     currFolder = folder;
-    console.log(`Fetching songs from folder: ${folder}`);
+    console.log(`Fetching songs from info.json in folder: ${folder}`);
     try {
-        let a = await fetch(`${folder}/`);
-        let response = await a.text();
-        let div = document.createElement("div");
-        div.innerHTML = response;
-        let as = div.getElementsByTagName("a");
-        songs = [];
+        let infoResponse = await fetch(`${folder}/info.json`);
+        if (!infoResponse.ok) throw new Error("info.json not found or failed to load");
+        let albumInfo = await infoResponse.json();
 
-        for (let index = 0; index < as.length; index++) {
-            const element = as[index];
-            if (element.href.endsWith(".mp3")) {
-                let path = new URL(element.href).pathname;
-                let songName = decodeURIComponent(path.split(`${folder}/`)[1]);
-                songs.push(songName);
-            }
+        if (!albumInfo.songs || !Array.isArray(albumInfo.songs)) {
+            throw new Error("info.json missing 'songs' array");
         }
+
+        songs = albumInfo.songs;
 
         let songUL = document.querySelector(".songList ul");
         songUL.innerHTML = "";
@@ -56,11 +51,13 @@ async function getSongs(folder) {
 
     } catch (err) {
         console.error(`Error loading songs from ${folder}:`, err);
+        songs = [];
     }
 
     return songs;
 }
 
+// Minor update here: decodeURIComponent for track to avoid double decode issues
 function playMusic(track, pause = false) {
     console.log("Playing:", track);
     currentSong.src = `${currFolder}/${track}`;
@@ -68,7 +65,7 @@ function playMusic(track, pause = false) {
         currentSong.play();
         document.getElementById("play").src = "img/pause.svg";
     }
-    document.querySelector(".songinfo").innerHTML = decodeURI(track);
+    document.querySelector(".songinfo").innerHTML = decodeURIComponent(track);
     document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
 }
 
