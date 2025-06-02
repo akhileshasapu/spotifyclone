@@ -11,7 +11,6 @@ function secondsToMinutesSeconds(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
-// UPDATED: getSongs now loads from info.json instead of directory listing
 async function getSongs(folder) {
     currFolder = folder;
     console.log(`Fetching songs from info.json in folder: ${folder}`);
@@ -57,7 +56,6 @@ async function getSongs(folder) {
     return songs;
 }
 
-// Minor update here: decodeURIComponent for track to avoid double decode issues
 function playMusic(track, pause = false) {
     console.log("Playing:", track);
     currentSong.src = `${currFolder}/${track}`;
@@ -72,42 +70,28 @@ function playMusic(track, pause = false) {
 async function displayAlbums() {
     console.log("Displaying albums...");
     try {
-        let a = await fetch("songs/");
-        let response = await a.text();
-        let div = document.createElement("div");
-        div.innerHTML = response;
-        let anchors = div.getElementsByTagName("a");
+        let res = await fetch("songs/albums.json");
+        let albums = await res.json();
         let cardContainer = document.querySelector(".cardContainer");
 
-        let array = Array.from(anchors);
-        for (let index = 0; index < array.length; index++) {
-            const e = array[index];
-            if (e.href.includes("/songs/") && !e.href.endsWith(".mp3")) {
-                let path = new URL(e.href).pathname;
-                let folder = decodeURIComponent(path.split("/songs/")[1].replace("/", ""));
+        for (const album of albums) {
+            const folder = album.folder;
+            const title = album.title;
+            const description = album.description;
 
-                try {
-                    let infoFetch = await fetch(`songs/${folder}/info.json`);
-                    let albumInfo = await infoFetch.json();
-                    console.log(`Loaded album info: ${albumInfo.title}`);
-
-                    cardContainer.innerHTML += `
-                        <div data-folder="${folder}" class="card">
-                            <div class="play">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 20V4L19 12L5 20Z" stroke="#141B34" fill="#000" stroke-width="1.5"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                            <img src="songs/${folder}/cover.jpg" alt="">
-                            <h2>${albumInfo.title}</h2>
-                            <p>${albumInfo.description}</p>
-                        </div>`;
-                } catch (infoErr) {
-                    console.warn(`Skipping folder '${folder}': info.json not found or malformed`, infoErr);
-                }
-            }
+            cardContainer.innerHTML += `
+                <div data-folder="${folder}" class="card">
+                    <div class="play">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 20V4L19 12L5 20Z" stroke="#141B34" fill="#000" stroke-width="1.5"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <img src="songs/${folder}/cover.jpg" alt="">
+                    <h2>${title}</h2>
+                    <p>${description}</p>
+                </div>`;
         }
 
         Array.from(document.getElementsByClassName("card")).forEach(e => {
@@ -119,12 +103,12 @@ async function displayAlbums() {
         });
 
     } catch (err) {
-        console.error("Error loading album folders:", err);
+        console.error("Error loading albums.json:", err);
     }
 }
 
 async function main() {
-    await getSongs("songs/love-mood"); // ✅ Changed to safe folder name
+    await getSongs("songs/love-mood");
     playMusic(songs[0], true);
     await displayAlbums();
 
