@@ -23,7 +23,8 @@ async function getSongs(folder) {
             throw new Error("info.json missing 'songs' array");
         }
 
-        songs = albumInfo.songs;
+        // Trim spaces from each song filename to avoid errors
+        songs = albumInfo.songs.map(song => song.trim());
 
         let songUL = document.querySelector(".songList ul");
         songUL.innerHTML = "";
@@ -57,6 +58,7 @@ async function getSongs(folder) {
 }
 
 function playMusic(track, pause = false) {
+    track = track.trim(); // Trim again before use
     console.log("Playing:", track);
     currentSong.src = `${currFolder}/${track}`;
     if (!pause) {
