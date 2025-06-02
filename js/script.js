@@ -124,14 +124,25 @@ async function main() {
         }
     });
 
+    // Time update event: updates time display, circle position, and seekbar gradient
     currentSong.addEventListener("timeupdate", () => {
-        let currentTimeStr = secondsToMinutesSeconds(currentSong.currentTime);
-        let durationStr = secondsToMinutesSeconds(currentSong.duration);
+        let currentTime = currentSong.currentTime;
+        let duration = currentSong.duration;
+        let percent = (currentTime / duration) * 100 || 0;
+
+        let currentTimeStr = secondsToMinutesSeconds(currentTime);
+        let durationStr = secondsToMinutesSeconds(duration);
         document.querySelector(".songtime").innerHTML = `${currentTimeStr} / ${durationStr}`;
-        document.querySelector(".circle").style.left =
-            (currentSong.currentTime / currentSong.duration) * 100 + "%";
+
+        // Move the circle indicator
+        document.querySelector(".circle").style.left = percent + "%";
+
+        // Change the seekbar background with gradient to show completed (green) and upcoming (grey)
+        let seekbar = document.querySelector(".seekbar");
+        seekbar.style.background = `linear-gradient(to right, #1fdf64 ${percent}%, #444 ${percent}%)`;
     });
 
+    // Seekbar click to jump to time
     document.querySelector(".seekbar").addEventListener("click", e => {
         let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
         document.querySelector(".circle").style.left = percent + "%";
